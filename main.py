@@ -233,3 +233,75 @@ facts = [
     "A legtöbb profi játékos 800–1200 eDPI környékén játszik.",
     "LAN környezetben teljesen más a hangulat: nincs ping, de ott a közönség nyomása."
 ]
+
+@app.route("/")
+def home():
+    content = """
+        <div class="section">
+            <h1>Üdv a CS2 Esports Hub oldalon!</h1>
+            <p style="font-size: 18px;">
+                Ez az oldal egy mini enciklopédia és oktatóportál a <b>Counter-Strike 2</b> profi e-sport világáról.
+                Találsz itt csapat- és játékosprofilokat, tornákat, pályaleírásokat, taktikákat és érdekességeket is.
+            </p>
+        </div>
+
+        <div class="section grid">
+            <div class="card">
+                <h2>🎯 Miért CS2 e-sport?</h2>
+                <p>
+                    A CS2 az egyik legnépszerűbb kompetitív FPS játék, hatalmas nézőszámmal és óriási
+                    pénzdíjazású tornákkal. A profi játékosok teljes állásban készülnek, napi több órát edzenek
+                    célzásra, taktikára és kommunikációra.
+                </p>
+            </div>
+            <div class="card">
+                <h2>📚 Mit találsz az oldalon?</h2>
+                <ul>
+                    <li>Részletes lexikon jellegű leírások top csapatokról és játékosokról</li>
+                    <li>Magyarázatot a legfontosabb fogalmakra (meta, lineup, rating, stb.)</li>
+                    <li>Oktató jellegű taktikai tippeket T és CT oldalra</li>
+                    <li>Rövid pályaguide-okat, kezdőknek és haladóknak egyaránt</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section card">
+            <h2>👣 Hogyan használd ezt az oldalt?</h2>
+            <ol>
+                <li>Nézd meg a <b>Csapatok</b> és <b>Játékosok</b> menüpontot, hogy képben legyél, kik a top szereplők.</li>
+                <li>Az <b>Események</b> alatt megtudod, melyik torna miért fontos.</li>
+                <li>A <b>Pályák</b> és <b>Taktikák</b> menüpont már kifejezetten segít játékosként fejlődni.</li>
+                <li>A <b>Tudtad-e?</b> menüben pedig fun facteket olvashatsz a CS világból.</li>
+            </ol>
+            <p class="muted">
+                Tipp: ha beadandóhoz használod ezt a projektet, a kód tetején lévő adatszerkezetekkel egyszerűen
+                tovább bővítheted a tartalmat (új csapat, új pálya stb.).
+            </p>
+        </div>
+    """
+    return render_template_string(html_base, content=content)
+
+
+@app.route("/teams")
+def teams_page():
+    content = "<h1>Profi CS2 Csapatok</h1>"
+    content += "<p class='muted'>Néhány ikonikus line-up a jelenlegi profi mezőnyből.</p>"
+    content += "<div class='grid'>"
+
+    for t in teams:
+        achievements_html = "<ul>" + "".join(f"<li>{a}</li>" for a in t["achievements"]) + "</ul>"
+        content += f"""
+        <div class='card'>
+            <h2>{t['name']}</h2>
+            <p><b>Ország:</b> {t['country']}</p>
+            <p><b>Alapítás éve:</b> {t['founded']}</p>
+            <p><b>Edző:</b> {t['coach']}</p>
+            <p><b>Ranking:</b> {t['ranking']}</p>
+            <p><b>Játékosok:</b><br> {", ".join(t['players'])}</p>
+            <h3>🏆 Eredmények:</h3>
+            {achievements_html}
+        </div>
+        """
+
+    content += "</div>"
+    return render_template_string(html_base, content=content)
