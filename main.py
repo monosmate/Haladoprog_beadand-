@@ -305,3 +305,174 @@ def teams_page():
 
     content += "</div>"
     return render_template_string(html_base, content=content)
+
+@app.route("/players")
+def players_page():
+    content = "<h1>Top CS2 Játékosok</h1>"
+    content += "<p class='muted'>Rövid bemutató néhány világsztár riflerről és AWPer-ről.</p>"
+    content += "<div class='grid'>"
+
+    for p in players:
+        content += f"""
+        <div class='card'>
+            <h2>{p['name']}</h2>
+            <div class='tag'>{p['role']}</div>
+            <p><b>Csapat:</b> {p['team']}</p>
+            <p><b>Életkor:</b> {p['age']} év</p>
+            <p><b>Ország:</b> {p['country']}</p>
+            <p><b>HLTV rating (kb.):</b> {p['rating']}</p>
+            <p>{p['bio']}</p>
+        </div>
+        """
+
+    content += "</div>"
+    return render_template_string(html_base, content=content)
+
+
+@app.route("/events")
+def events_page():
+    content = "<h1>CS2 E-Sport Események</h1>"
+    content += "<p class='muted'>A legfontosabb LAN-tornák, ahol a legjobb csapatok összecsapnak.</p>"
+    content += "<div class='grid'>"
+
+    for e in events:
+        highlights_html = "<ul>" + "".join(f"<li>{h}</li>" for h in e["highlights"]) + "</ul>"
+        content += f"""
+        <div class='card'>
+            <h2>{e['name']}</h2>
+            <p><b>Helyszín:</b> {e['location']}</p>
+            <p><b>Összdíjazás:</b> {e['prize_pool']}</p>
+            <p><b>Legutóbbi győztes:</b> {e['winner']}</p>
+            <p><b>MVP:</b> {e['mvp']}</p>
+            <h3>Miért fontos?</h3>
+            {highlights_html}
+        </div>
+        """
+
+    content += "</div>"
+    return render_template_string(html_base, content=content)
+
+
+@app.route("/maps")
+def maps_page():
+    content = "<h1>CS2 Pályák – Rövid Guide</h1>"
+    content += "<p class='muted'>Alap taktikai tippek T és CT oldalra néhány népszerű pályán.</p>"
+    content += "<div class='grid'>"
+
+    for m in maps_data:
+        tips_t_html = "<ul>" + "".join(f"<li>{t}</li>" for t in m["tips_t"]) + "</ul>"
+        tips_ct_html = "<ul>" + "".join(f"<li>{t}</li>" for t in m["tips_ct"]) + "</ul>"
+        content += f"""
+        <div class='card'>
+            <h2>{m['name']}</h2>
+            <p><b>Típus:</b> {m['type']}</p>
+            <p><b>Nehézségi szint:</b> {m['difficulty']}</p>
+            <p>{m['description']}</p>
+            <h3>💣 T oldal tippek:</h3>
+            {tips_t_html}
+            <h3>🛡 CT oldal tippek:</h3>
+            {tips_ct_html}
+        </div>
+        """
+
+    content += "</div>"
+    return render_template_string(html_base, content=content)
+
+
+@app.route("/tactics")
+def tactics_page():
+    content = "<h1>Taktikák és fogalmak</h1>"
+    content += "<p class='muted'>Egyszerű, de hasznos stratötletek T és CT oldalra, plusz utility alapok.</p>"
+
+    # T oldal
+    t_list = "<ul>" + "".join(f"<li>{t}</li>" for t in tactics["t_side"]) + "</ul>"
+    ct_list = "<ul>" + "".join(f"<li>{t}</li>" for t in tactics["ct_side"]) + "</ul>"
+    util_list = "<ul>" + "".join(f"<li>{t}</li>" for t in tactics["utility"]) + "</ul>"
+
+    content += f"""
+        <div class="grid">
+            <div class="card">
+                <h2>💣 T oldal stratok</h2>
+                {t_list}
+            </div>
+            <div class="card">
+                <h2>🛡 CT oldal stratok</h2>
+                {ct_list}
+            </div>
+            <div class="card">
+                <h2>🎇 Utility fogalmak</h2>
+                {util_list}
+            </div>
+        </div>
+
+        <div class="section card" style="margin-top: 30px;">
+            <h2>Mitől jó egy taktika?</h2>
+            <ul>
+                <li><b>Tervezettség:</b> minden játékos tudja, hol a feladata, milyen időzítéssel mozog.</li>
+                <li><b>Utility használat:</b> smokes, flash, molotov – nem csak „random” dobálva.</li>
+                <li><b>Reakció:</b> ha az ellenfél elront egy retaket vagy rotate-et, azt ki kell használni.</li>
+                <li><b>Kommunikáció:</b> callok, információk gyors átadása (pl. „egy low HP, CT-n fut le”).</li>
+            </ul>
+        </div>
+    """
+
+    return render_template_string(html_base, content=content)
+
+
+@app.route("/facts")
+def facts_page():
+    content = "<h1>„Tudtad-e?” – CS2 érdekességek</h1>"
+    content += "<p class='muted'>Random fun factek a játék és az e-sport körül.</p>"
+
+    content += "<div class='grid'>"
+    for i, f_text in enumerate(facts, start=1):
+        content += f"""
+        <div class="card">
+            <h2>#{i}</h2>
+            <p>{f_text}</p>
+        </div>
+        """
+    content += "</div>"
+
+    return render_template_string(html_base, content=content)
+
+
+@app.route("/contact", methods=["GET", "POST"])
+def contact():
+    name = None
+    message = None
+
+    if request.method == "POST":
+        name = request.form.get("name")
+        message = request.form.get("message")
+
+    content = """
+        <h1>Kapcsolat</h1>
+        <p class="muted">Írj nekünk, ha van ötleted új tartalomra, vagy hibaüzenetet kaptál a kódban.</p>
+        <form method="POST" style="margin-top: 30px;">
+            <label>Név</label>
+            <input type="text" name="name" placeholder="Ide írd a neved">
+
+            <label>Üzenet</label>
+            <textarea name="message" rows="4" placeholder="Vélemény, kérdés, ötlet..."></textarea>
+
+            <button type="submit">Küldés</button>
+        </form>
+    """
+
+    if name:
+        content += f"""
+            <div class='card' style="margin-top:30px;">
+                <h3>Köszönjük az üzenetet!</h3>
+                <p><b>Név:</b> {name}</p>
+                <p><b>Üzenet:</b> {message}</p>
+            </div>
+        """
+
+    return render_template_string(html_base, content=content)
+
+
+# -------------------- RUN --------------------
+if __name__ == "__main__":
+    app.run(debug=True)
+
