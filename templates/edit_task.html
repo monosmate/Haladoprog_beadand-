@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Feladat szerkesztése{% endblock %}
+
+{% block content %}
+<h2>Feladat szerkesztése</h2>
+
+<form method="POST">
+    <div class="mb-3">
+        <label for="title" class="form-label">Feladat címe *</label>
+        <input type="text" class="form-control" id="title" name="title" value="{{ task.title }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="description" class="form-label">Leírás</label>
+        <textarea class="form-control" id="description" name="description" rows="3">{{ task.description }}</textarea>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <label for="category" class="form-label">Kategória</label>
+            <input type="text" class="form-control" id="category" name="category" value="{{ task.category }}">
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <label for="priority" class="form-label">Prioritás</label>
+            <select class="form-select" id="priority" name="priority">
+                <option value="alacsony" {% if task.priority == 'alacsony' %}selected{% endif %}>Alacsony</option>
+                <option value="közepes" {% if task.priority == 'közepes' %}selected{% endif %}>Közepes</option>
+                <option value="sürgős" {% if task.priority == 'sürgős' %}selected{% endif %}>Sürgős</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <label for="status" class="form-label">Státusz</label>
+            <select class="form-select" id="status" name="status">
+                <option value="folyamatban" {% if task.status == 'folyamatban' %}selected{% endif %}>Folyamatban</option>
+                <option value="kész" {% if task.status == 'kész' %}selected{% endif %}>Kész</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <label for="due_date" class="form-label">Határidő</label>
+            <input type="date" class="form-control" id="due_date" name="due_date"
+                   value="{% if task.due_date %}{{ task.due_date.strftime('%Y-%m-%d') }}{% endif %}">
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Mentés</button>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Mégse</a>
+</form>
+{% endblock %}

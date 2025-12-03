@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-12">
+        <form method="GET" class="row g-2">
+            <div class="col-auto">
+                <select name="status" class="form-select" onchange="this.form.submit()">
+                    <option value="all" {% if filter_status == 'all' %}selected{% endif %}>Minden státusz</option>
+                    <option value="folyamatban" {% if filter_status == 'folyamatban' %}selected{% endif %}>Folyamatban</option>
+                    <option value="kész" {% if filter_status == 'kész' %}selected{% endif %}>Kész</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <select name="priority" class="form-select" onchange="this.form.submit()">
+                    <option value="all" {% if filter_priority == 'all' %}selected{% endif %}>Minden prioritás</option>
+                    <option value="alacsony" {% if filter_priority == 'alacsony' %}selected{% endif %}>Alacsony</option>
+                    <option value="közepes" {% if filter_priority == 'közepes' %}selected{% endif %}>Közepes</option>
+                    <option value="sürgős" {% if filter_priority == 'sürgős' %}selected{% endif %}>Sürgős</option>
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {% if tasks %}
+        {% for task in tasks %}
+        <div class="col-md-6 mb-3">
+            <div class="card priority-{{ task.priority }} {% if task.status == 'kész' %}status-kész{% endif %}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ task.title }}</h5>
+                    <p class="card-text">{{ task.description or 'Nincs leírás' }}</p>
+
+                    <div class="mb-2">
+                        <span class="badge bg-secondary">{{ task.category or 'Nincs kategória' }}</span>
+                        <span class="badge bg-{% if task.priority == 'sürgős' %}danger{% elif task.priority == 'közepes' %}warning{% else %}success{% endif %}">
+                            {{ task.priority }}
+                        </span>
+                        <span class="badge bg-{% if task.status == 'kész' %}success{% else %}primary{% endif %}">
+                            {{ task.status }}
+                        </span>
+                    </div>
+
+                    {% if task.due_date %}
+                    <p class="text-muted small mb-2">Határidő: {{ task.due_date.strftime('%Y-%m-%d') }}</p>
+                    {% endif %}
+
+                    <div class="btn-group btn-group-sm" role="group">
+                        {% if task.status != 'kész' %}
+                        <a href="{{ url_for('complete_task', task_id=task.id) }}" class="btn btn-success">✓ Kész</a>
+                        {% endif %}
+                        <a href="{{ url_for('edit_task', task_id=task.id) }}" class="btn btn-primary">Szerkesztés</a>
+                        <a href="{{ url_for('delete_task', task_id=task.id) }}"
+                           class="btn btn-danger"
+                           onclick="return confirm('Biztosan törlöd?')">Törlés</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Még nincsenek feladatok. <a href="{{ url_for('add_task') }}">Adj hozzá egyet!</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
